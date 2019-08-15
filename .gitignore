@@ -1,6 +1,7 @@
-/static
-/media
-/__pycache__
+static/
+media/
+__pycache__/
+*.pyc
 celerybeat-schedule.bak
 celerybeat-schedule.dat
 celerybeat-schedule.dir
