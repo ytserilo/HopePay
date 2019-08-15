@@ -1,0 +1,149 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>HopePay, веб-сервіс безпечної покупки</title>
+    <link rel="shortcut icon" href="{% static 'img/HopePay.jpg' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link rel="stylesheet" href="{% static 'css/create_remittance_style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{% static 'css/custom_style.css' %}">
+</head>
+<body>
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="/chat/remittances/">HopePay</a>
+    <a class="nav-link" style="position: absolute; left: 100px; color: black; " href="/">Про нас</a>
+  <div class="my-2 my-lg-0" style="position: absolute; right: 10px;">
+    	<img src="{{ user.user_image.url }}" id="avatar-img" alt="avatar">
+      <div class="dropdown-menu" style="left: -130px;" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="/auth/profile/">Профіль</a>
+        <a class="dropdown-item" href="/remittance/orders/">Договора</a>
+        <a class="dropdown-item" href="/auth/logout/">Вийти</a>
+      </div>
+  </div>
+  <script type="text/javascript">
+    $("#avatar-img").on('click', function(){
+      if($(".dropdown-menu").attr('class') == 'dropdown-menu show'){
+        $(".dropdown-menu").attr('class', 'dropdown-menu')
+      }else{
+        $(".dropdown-menu").attr('class', 'dropdown-menu show')
+      }
+
+    });
+  </script>
+</nav>
+{% if card_error %}
+<div class="modal" style="display: block" tabindex="-1" role="dialog">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Помилка заповнення інформації</h5>
+    </div>
+    <div class="modal-body">
+      <p>{{ card_error }} <a href="/auth/profile/">натисніть сюди<a/></p>
+    </div>
+  </div>
+</div>
+</div>
+
+{% else %}
+  {% if user %}
+    <div class="container register-form">
+            <div class="form">
+                <div class="note">
+                    <h3>При створенні договору обов'язково уважно заповнюйте данні</h3>
+                </div>
+
+                <div class="form-content">
+                    <div class="row">
+                      {% csrf_token %}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                              <textarea id="description" style="resize: none;" class="form-control" placeholder="Опис договору *" rows="8" cols="80"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="price" class="form-control" placeholder="Ціна *" value=""/>
+                            </div>
+                        </div>
+                        <div class="col-md-6 add">
+                            <div class="form-group">
+                              <select class="form-control" id="currency">
+                                <option value="UAH">UAH</option>
+                              </select>
+
+                            </div>
+                            <div class="form-group">
+                              <input id="postal" type="checkbox" checked name="postal">
+                              <label for="scales">Натисніть якщо товар прийде по пошті</label>
+                            </div>
+                            <div class="form-group">
+                              <input id="seller" type="checkbox" name="seller">
+                              <label for="scales">Натиніть якщо ви продавець</label>
+                            </div>
+                            <div class="form-group">
+                              <input id="pay" type="checkbox" name="pay">
+                              <label for="scales">Натиніть якщо ви хочете купити чи продати товар в рострочку</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <button id="create_order" type="button" class="btnSubmit">Створити Договір</button>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+      function parts(){
+        $('#parts').on('input', function(){
+
+          var parent = $('#parts').parent();
+
+          if($('#parts').val() == ''){
+            parent.children('.alert-danger').remove();
+            parent.append('<div class="alert alert-danger" role="alert">Будь-ласка кажіть кількість платежів</div>');
+          }
+          else{
+            if(Number($('#parts').val()) > 12){
+              parent.children('.alert-danger').remove();
+              parent.append('<div class="alert alert-danger" role="alert">Максимальна кількість це - 12 платежів</div>');
+            }
+            else if(Number($('#parts').val()) < 2){
+              parent.children('.alert-danger').remove();
+              parent.append('<div class="alert alert-danger" role="alert">Мінімальна кількість це - 2 платежа</div>');
+            }
+            else{
+              parent.children('.alert-danger').remove();
+          }
+          }
+        });
+      }
+      $("#pay").on('click', function(){
+        if($("#pay").prop('checked') == true){
+          if($(".add").children('.parts').length == 0){
+            var html = '';
+            html += '<div class="form-group parts">';
+              html += '<input type="number" id="parts" name="parts" class="form-control" placeholder="Кількість платежів" min="2" max="12">';
+            html += '</div>';
+            $(".add").append(html);
+             parts()
+          }
+        }
+        else{
+          $('.add').children('.parts').remove();
+        }
+      });
+
+    </script>
+    <script src='{% static "js/jquery.cookie.js" %}'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.js"></script>
+    <script src="{% static 'js/ajax_create_remittance.js' %}"></script>
+    {% else %}
+      <h2 style="text-align: center"><a href="/auth/register/">Увійдіть або Зареєструйтесь</a></h2>
+    {% endif %}
+  {% endif %}
+</body>
+</html>

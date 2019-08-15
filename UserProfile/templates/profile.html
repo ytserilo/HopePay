@@ -1,0 +1,533 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    {% load staticfiles %}
+    <title>HopePay, веб-сервіс безпечної покупки</title>
+    <link rel="shortcut icon" href="{% static 'img/HopePay.jpg' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
+      <link rel="stylesheet" href="{% static 'css/custom_style.css' %}">
+  </head>
+
+
+<body>
+  {% if user %}
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="/chat/remittances/">HopePay</a>
+    <a class="nav-link" style="position: absolute; left: 100px; color: black; " href="/">Про нас</a>
+  <div class="my-2 my-lg-0" style="position: absolute; right: 10px;">
+    	<img src="{{ user.user_image.url }}" id="avatar-img" alt="avatar">
+      <div class="dropdown-menu" style="left: -130px;" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="/auth/profile/">Профіль</a>
+        <a class="dropdown-item" href="/remittance/orders/">Договора</a>
+        <a class="dropdown-item" href="/auth/logout/">Вийти</a>
+      </div>
+  </div>
+  <script type="text/javascript">
+    $("#avatar-img").on('click', function(){
+      if($(".dropdown-menu").attr('class') == 'dropdown-menu show'){
+        $(".dropdown-menu").attr('class', 'dropdown-menu')
+      }else{
+        $(".dropdown-menu").attr('class', 'dropdown-menu show')
+      }
+
+    });
+  </script>
+</nav>
+    <hr>
+    <div class="container bootstrap snippet">
+        <div class="row">
+      		<div class="col-sm-10"><h1>{{ user.username }}</h1></div>
+
+        </div>
+        <div class="row">
+      		<div class="col-sm-3"><!--left col-->
+
+          <style media="screen">
+            .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+              color: white;
+              cursor: default;
+              background-color: #435f7a;
+              box-shadow: 1px 1px 10px #435f7a;
+              border-bottom-color: transparent;
+              margin-right: 2px;
+              transition: 0.3s all;
+
+            }
+            .nav-tabs .nav-link {
+                  border: 0px solid transparent;
+                border-top-left-radius: .25rem;
+                border-top-right-radius: .25rem;
+            }
+            .nav-tabs>li>a:hover {
+                background: #449d44;
+                color: white;
+                box-shadow: 1px 1px 15px #398439;
+                border: transparent;
+                transition: 0.3 all;
+            }
+            .nav-tabs>li>a {
+              margin-right: 2px;
+              line-height: 1.42857143;
+              border: none;
+              border-radius: 4px 4px 0 0;
+            }
+            .btn-success {
+                color: #fff;
+                background-color: #435f7a;
+                border-color: #435f7a;
+                box-shadow: 1px 1px 10px black;
+                transition: 0.3 all;
+            }
+            .btn-success:hover {
+                color: #fff;
+                background-color: #449d44;
+                border-color: #398439;
+                box-shadow: 1px 1px 10px #4cae4c;
+            }
+            #upload_photo{
+              padding: 10px 30px;
+              background: #435f7a;
+              color: white;
+              box-shadow: 1px 1px 10px black;
+            }
+            #upload_photo:hover{
+              background-color: #449d44;
+              box-shadow: 1px 1px 10px #398439;
+              cursor: pointer;
+            }
+            #file-upload{
+              display: none;
+            }
+            #avatar{
+              height: 250px;
+              width: 250px;
+              border-radius: 100%;
+            }
+            @media all and (max-width: 1300px) {
+              #avatar{
+                height: 150px;
+                width: 150px;
+              }
+            }
+            @media all and (max-width: 767px) {
+              #avatar{
+                height: 250px;
+                width: 250px;
+              }
+            }
+            i.fa {
+              width: 26px;
+              height: 26px;
+              line-height: 35px;
+              text-align: center;
+              margin-left: -26px;
+              position: relative;
+              z-index: 1;
+              float: right;
+              cursor: pointer;
+            }
+          </style>
+            <script src="{% static 'js/cookie.js' %}"></script>
+          <div class="text-center">
+            {% csrf_token %}
+            <img src="{{ user.user_image.url }}" id="avatar" class="avatar img-circle img-thumbnail" alt="avatar">
+            <label id="upload_photo" for="file">Загрузить фото</label>
+            <input type="file" name="file" id="file-upload" accept="image/gif, image/jpeg, image/png"><br>
+          </div>
+          <script type="text/javascript">
+          var upload_photo_label = $("#upload_photo");
+            $("#upload_photo").on('click', function(){
+               $('#file-upload').trigger('click');
+            });
+            $('#file-upload').change(function(){
+              upload_photo_label.html(this.files[0].name + '<br>'+'(Розмір фото ' + String(Math.round(this.files[0].size / 1024)) + ' кБ)');
+              if(Math.round(this.files[0].size / 1024) > 1000){
+                if(upload_photo_label.parent().children('.alert-danger').length == 0){
+                  upload_photo_label.parent().append('<div class="alert alert-danger">Це фото має дуже великий розмір, будь-ласка оберіть фото менше (1 МБ)</div>');
+                }
+              }else{
+                if(upload_photo_label.parent().children('.alert-danger').length != 0){
+
+                  upload_photo_label.parent().children('.alert-danger').remove();
+                }
+
+                function csrfSafeMethod(method) {
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                };
+                $.ajaxSetup({
+                    crossDomain: false,
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type)) {
+                            xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+                        }
+                    }
+                });
+                var file_data = $('#file-upload').prop('files')[0];
+                var form_data = new FormData();
+                form_data.append('file', file_data);
+
+                $.ajax({
+                  method: 'POST',
+                  url: '/auth/change_avatar/',
+                  data: form_data,
+                  dataType: 'text',
+                  cache: false,
+                  contentType: false,
+                  processData: false,
+                  success: function(data){
+                    $("#avatar").attr('src', URL.createObjectURL($('#file-upload').prop('files')[0]));
+                  }
+                });
+              }
+
+            })
+          </script>
+          <hr>
+          <br>
+
+          </div><!--/col-3-->
+        	<div class="col-sm-9">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a class="nav-link" data-toggle="tab" href="#password">Заміна пароля</a></li>
+                    {% if user.usercard %}
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#card">Змінити банківську картку</a></li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#card">Додати банківську картку</a></li>
+                    {% endif %}
+                  </ul>
+              <div class="tab-content">
+
+                 <div class="tab-pane active" id="password">
+
+                       <div class="form-group">
+                           <div class="col-xs-6">
+                               <label for="new_password"><h4>Старий пароль</h4></label>
+                               <div class="eye">
+                                 <i class="fa fa-eye" onclick="see('old_password', this)"></i>
+                               </div>
+
+                               <input type="password"  class="form-control" id="old_password" placeholder="Старий пароль" title="Введіть ваше місце проживання">
+
+                           </div>
+                       </div>
+                       <div class="form-group">
+                           <div class="col-xs-6">
+                               <label for="new_password"><h4>Новий пароль</h4></label>
+                               <div class="eye">
+                                 <i class="fa fa-eye" onclick="see('new_password1', this)"></i>
+                               </div>
+
+                               <input type="password" class="form-control" id="new_password1" placeholder="Новий пароль" title="Введіть ваше місце проживання">
+
+                           </div>
+                           <div class="col-xs-6">
+                               <label for="new_password"><h4>Повторіть пароль</h4></label>
+                               <div class="eye">
+                                 <i class="fa fa-eye" onclick="see('new_password2', this)"></i>
+                               </div>
+                               <input type="password" class="form-control" id="new_password2" placeholder="Новий пароль" title="Введіть ваше місце проживання">
+                           </div>
+                       </div>
+                       <div class="form-group">
+                            <div class="col-xs-12">
+                                 <br>
+                                 <button class="btn btn-lg btn-success" id="change_password" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Зберегти</button>
+                             </div>
+                       </div>
+                       <div class="form-group">
+                            <div class="col-xs-6" id="password_error"></div>
+                       </div>
+                 </div>
+
+                 <div class="tab-pane" id="card">
+                   <div>
+                       <div class="row">
+                           <div class="col-md-8">
+                               <div class="panel panel-default">
+                                   <div class="panel-heading">
+                                       <h3 class="panel-title">
+                                         Платіжні реквізити
+                                       </h3>
+                                   </div>
+                                   <div class="panel-body">
+                                       <form role="form">
+                                         <div class="form-group">
+                                             <label for="cardNumber">
+                                                 НОМЕР МОБІЛЬНОГО ТЕЛЕФОНУ</label>
+                                             <div class="input-group">
+                                                 <input type="text" class="form-control" value="" id="phone" maxlength="10" placeholder="Дійсний номер мобільного телефону"
+                                                     required autofocus />
+                                                 <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                             </div>
+                                         </div>
+                                       <div class="form-group">
+                                           <label for="cardNumber">
+                                               НОМЕР КАРТКИ</label>
+                                           <div class="input-group">
+                                               <input type="text" class="form-control" value="{{ user.usercard.card_number }}" id="cardNumber" maxlength="19" placeholder="Дійсний номер картки"
+                                                   required autofocus />
+                                               <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+                                           </div>
+                                       </div>
+                                       <div class="row">
+                                           <div class="col-xs-7 col-md-7">
+                                               <div class="form-group">
+                                                   <label for="expityMonth">
+                                                       ТЕРМІН ПРИДАТНОСТІ</label>
+                                                   <div class="col-xs-6 col-lg-6 pl-ziro">
+                                                       <input type="text" class="form-control" value="{{ user.usercard.month_card }}" id="expityMonth" placeholder="MM" required />
+                                                   </div>
+                                                   <div class="col-xs-6 col-lg-6 pl-ziro">
+                                                       <input type="text" class="form-control" value="{{ user.usercard.year_card }}" id="expityYear" placeholder="YY" required /></div>
+                                               </div>
+                                           </div>
+                                           <div class="col-xs-5 col-md-5 pull-right">
+                                               <div class="form-group">
+                                                   <label for="cvCode">
+                                                       CV КОД</label>
+                                                   <input type="password" class="form-control" value="{{ user.usercard.cvv_card }}" id="cvCode" placeholder="CV" required />
+                                               </div>
+                                           </div>
+                                       </div>
+                                       </form>
+                                   </div>
+                               </div>
+                               <br/>
+                               <button id="add-button" class="btn btn-success btn-lg btn-block" role="button">Додати картку</button>
+                           </div>
+                       </div>
+                   </div>
+                 </div>
+                 <script type="text/javascript">
+                 var gen_key = undefined;
+                 var encrypter = new JSEncrypt;
+
+                 function security_connect(){
+                   $.ajax({
+                     method: 'GET',
+                     url: '/auth/rsa/',
+                     data: {
+                       'key': Math.floor(Math.random() * Math.floor(999999))
+                     },
+                     success: function(data){
+                       if (data['response'] == 'reload'){
+                         security_connect();
+                       }
+                       else{
+                         var pubkey = data['pubkey'];
+                         gen_key = data['key'];
+                         encrypter.setPublicKey(pubkey);
+                       }
+                     }
+                   });
+                 }
+                 security_connect();
+
+                 function encrypt_value(stringToBeEncrypted) {
+                     return encrypter.encrypt(stringToBeEncrypted);
+                 };
+                 function see(e, el){
+                   $("#"+e).attr('type', 'text');
+                   el.setAttribute('class', 'fa fa-eye-slash');
+                   el.setAttribute('onclick', 'sleep("'+ e +'", this)');
+                 };
+                 function sleep(e, el){
+                   $("#"+e).attr('type', 'password');
+                   el.setAttribute('class', 'fa fa-eye');
+                   el.setAttribute('onclick', 'see("'+ e +'", this)');
+                 }
+                 var old_password = $("#old_password");
+                 var new_password1 = $("#new_password1");
+                 var new_password2 = $("#new_password2");
+                    $("#change_password").on('click', function(){
+
+
+                      if(old_password.val() == '' || new_password1.val() == '' || new_password2.val() == ''){
+                        if($("#password_error").children('.alert-danger').length == 0){
+                          $("#password_error").append('<div class="alert alert-danger">Щоб змінити пароль потрібно заповнити всі поля</div>');
+                        }
+                      }
+                      else{
+                        function csrfSafeMethod(method) {
+                            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                        };
+                        $.ajaxSetup({
+                            crossDomain: false,
+                            beforeSend: function(xhr, settings) {
+                                if (!csrfSafeMethod(settings.type)) {
+                                    xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+                                }
+                            }
+                        });
+                        $.ajax({
+                          url: '/auth/change_password/',
+                          method: 'POST',
+                          data: {
+                            'old_password': encrypt_value(old_password.val()),
+                            'new_password1': encrypt_value(new_password1.val()),
+                            'new_password2': encrypt_value(new_password2.val()),
+                            'key': gen_key
+                          },
+                          success: function(data){
+                            if(data['result']){
+                              if($("#password_error").children('.alert-danger').length != 0){
+                                $("#password_error").children('.alert-danger').remove();
+                              }
+                              alert('Пароль був успішно змінений');
+                            }else if (data['new_password']) {
+                              if($("#password_error").children('.alert-danger').length == 0){
+                                $("#password_error").append('<div class="alert alert-danger">'+ data['new_password'] +'</div>');
+                              }
+                            }else if (data['password_error']) {
+                              if($("#password_error").children('.alert-danger').length == 0){
+                                $("#password_error").append('<div class="alert alert-danger">'+ data['password_error'] +'</div>');
+                              }
+                            }
+                          }
+                        })
+                      }
+                    });
+                    new_password1.on('blur', function(){
+                      var div1 = new_password1.parent();
+                      var div2 = new_password2.parent();
+
+                      if(new_password1.val() != ''){
+                          var result_re = new_password1.val().match(/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}/);
+                          if (result_re != null){
+                            if(div1.children('.alert-danger').length != 0){
+                              div1.children('.alert-danger').remove();
+                            }
+                            if(new_password1.val() && new_password2.val() && new_password1.val() == new_password2.val()){
+                              if(div2.children('.alert-danger').length != 0){
+                                div2.children('.alert-danger').remove();
+                              }
+                            }
+                          }
+                          else{
+                            if(div1.children('.alert-danger').length != 0){
+                              div1.children('.alert-danger').remove();
+                              div1.append('<div class="alert alert-danger">Введіть пароль не менше 8 символів використовуючи цифри, латиницю і принаймні одну велику літеру</div>');
+                            }
+                            else{
+                              div1.append('<div class="alert alert-danger">Введіть пароль не менше 8 символів використовуючи цифри, латиницю і принаймні одну велику літеру</div>');
+                            }
+                          }
+                        if(new_password1.val() && new_password2.val() && new_password1.val() != new_password2.val()){
+                          if(div2.children('.alert-danger').length != 0){
+                            div2.children('.alert-danger').remove();
+                            div2.append('<div class="alert alert-danger">Паролі не співпадають</div>');
+                          }
+                          else{
+                            div2.append('<div class="alert alert-danger">Паролі не співпадають</div>');
+                          }
+                        }
+                      }
+                      else{
+                        if(div1.children('.alert-danger').length != 0){
+                          div1.children('.alert-danger').remove();
+                          div1.append('<div class="alert alert-danger">Це поле обов\'язкове</div>');
+                        }
+                        else{
+                          div1.append('<div class="alert alert-danger">Це поле обов\'язкове</div>');
+                        }
+                      }
+                    });
+                    new_password2.on('blur', function(){
+                      var div1 = new_password1.parent();
+                      var div2 = new_password2.parent();
+                      if(new_password2.val() != ''){
+                          var result_re = new_password1.val().match(/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}/);
+                          if (result_re != null){
+                            if(div1.children('.alert-danger').length != 0){
+                              div1.children('.alert-danger').remove();
+                            }
+                            if(new_password1.val() && new_password2.val() && new_password1.val() == new_password2.val()){
+                              if(div2.children('.alert-danger').length != 0){
+                                div2.children('.alert-danger').remove();
+                              }
+                            }
+                          }
+                          else{
+                            if(div1.children('.alert-danger').length != 0){
+                              div1.children('.alert-danger').remove();
+                              div1.append('<div class="alert alert-danger">Введіть пароль не менше 8 символів використовуючи цифри, латиницю і принаймні одну велику літеру</div>');
+                            }
+                            else{
+                              div1.append('<div class="alert alert-danger">Введіть пароль не менше 8 символів використовуючи цифри, латиницю і принаймні одну велику літеру</div>');
+                            }
+                          }
+                        if(new_password1.val() && new_password2.val() && new_password1.val() != new_password2.val()){
+                          if(div2.children('.alert-danger').length != 0){
+                            div2.children('.alert-danger').remove();
+                            div2.append('<div class="alert alert-danger">Паролі не співпадають</div>');
+                          }
+                          else{
+                            div2.append('<div class="alert alert-danger">Паролі не співпадають</div>');
+                          }
+                        }
+                      }
+                      else{
+                        if(div2.children('.alert-danger').length != 0){
+                          div2.children('.alert-danger').remove();
+                          div2.append('<div class="alert alert-danger">Це поле обов\'язкове</div>');
+                        }
+                        else{
+                          div2.append('<div class="alert alert-danger">Це поле обов\'язкове</div>');
+                        }
+                      }
+                    });
+
+
+                    var cardNumber = $("#cardNumber");
+                    var expityMonth = $("#expityMonth");
+                    var expityYear = $("#expityYear");
+                    var cvCode = $("#cvCode");
+                    var phone_number = $("#phone");
+
+                    $("#add-button").on('click', function(){
+                      function csrfSafeMethod(method) {
+                          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                      };
+                      $.ajaxSetup({
+                          crossDomain: false,
+                          beforeSend: function(xhr, settings) {
+                              if (!csrfSafeMethod(settings.type)) {
+                                  xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+                              }
+                          }
+                      });
+                        $.ajax({
+                          method: 'POST',
+                          url: '/auth/add_payment_card/',
+                          data: {
+                            'key': gen_key,
+                            'card': encrypt_value(cardNumber.val()),
+                            'cvv': encrypt_value(cvCode.val()),
+                            'mm': encrypt_value(expityMonth.val()),
+                            'yy': encrypt_value(expityYear.val()),
+                            'phone': encrypt_value(phone_number.val()),
+                          },
+                          success: function(data){
+                            alert(data['result']);
+                          }
+                        })
+                    });
+                 </script>
+                </div>
+              </div>
+            </div>
+        </div>
+        {% else %}
+          <a href="/auth/register/"></a>
+        {% endif %}
+
+  </body>
+</html>

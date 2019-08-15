@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    {% load staticfiles %}
+    <meta charset="utf-8">
+    <title>HopePay, веб-сервіс безпечної покупки</title>
+    <link rel="shortcut icon" href="{% static 'img/HopePay.jpg' %}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="keywords" content="HopePay, ХопіПей, безпечна покупка, як купувати безппечно, как безопасно покупать, как безопасно покупать в интернете, безопасная покупка">
+    <meta name="description" content="HopePay - це повний контроль ваших коштів від початку і до кінця покупки. Ви можете відмінити свою покупку коли вам вздумається.">
+    <script src='https://code.jquery.com/jquery-2.2.4.min.js'></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    {% block products_style %}{% endblock %}
+    <script src="{% static 'js/cookie.js' %}"></script>
+
+
+    {% block style_scroll_remittance %}{% endblock %}
+  </head>
+  <body>
+    <div class="modal" id="warning" style="z-index: 9999999; display: block; background-color: rgba(0, 0, 0, 0.5);" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" id="close_warning" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Веб-сервіс працює в тестовому режимі. Всі банківські переводи і оплати не проводяться</p>
+        </div>
+      </div>
+    </div>
+    </div>
+    <script type="text/javascript">
+      $("#close_warning").on('click',function(){
+        $("#warning").attr('style', 'display: none')
+      })
+    </script>
+    <div class="modal fade" style="display: none" id="so_login" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Увійти</h5>
+            <button type="button" id="close_login_modal" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="modal_body_login">
+
+            <div class="input-group mb-3">
+                <input type="text" id="username_modal" class="form-control" placeholder="Логін" aria-label="Логін" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+                <input type="password" id="password_modal" class="form-control" placeholder="Пароль" aria-label="Пароль" aria-describedby="basic-addon1">
+            </div>
+            <button class="btn btn-primary" style="background-color: #435f7a;" id="login_in" type="submit">Увійти</button>
+          </div>
+
+          <div class="mb-3">
+              <a href="#" id="restore" class="link" style="margin-left: 10px">Відновити пароль</a>
+              <a href="/auth/register/">Зареєструватися</a>
+          </div>
+
+
+        </div>
+
+      </div>
+    </div>
+  <div id="frame" style="overflow: visible;">
+    <nav class="navbar navbar-light bg-light">
+      <div class="nav-menu">
+        <a href="/market/products/">HopePay</a>
+        <a href="/">Про нас</a>
+        {% block switch_mode %}{% endblock %}
+      </div>
+
+    <div class="my-2 my-lg-0" style="position: absolute; right: 10px;">
+      	<img src="{{ user.user_image.url }}" width="50px" style="border-radius: 50%; cursor: pointer" height="50px" id="avatar-img" alt="avatar">
+        {% if user %}
+          <div class="dropdown-menu log" style="left: -130px;" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="/auth/profile/">Профіль</a>
+            <a class="dropdown-item" href="/remittance/orders/">Оголошення</a>
+            <a class="dropdown-item" href="/auth/logout/">Вийти</a>
+          </div>
+        {% else %}
+          <div class="dropdown-menu log" style="left: -130px;" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#login" style="text-align: center" id="login-modal">Увійти <br>або Зареєструйтесь</a>
+          </div>
+
+        {% endif %}
+    </div>
+    <script type="text/javascript">
+      $("#avatar-img").on('click', function(){
+        if($(".log").attr('class') == 'dropdown-menu log show'){
+          $(".log").attr('class', 'dropdown-menu log')
+        }else{
+          $(".log").attr('class', 'dropdown-menu log show')
+        }
+
+      });
+    </script>
+    <script src="{% static 'js/nav_reg.js' %}">
+
+    </script>
+    
+  </nav>
+  {% block ask %}{% endblock %}
+  {% block remittances %}{% endblock %}
+  {% block individual_chat %}{% endblock %}
+  {% block contacts %}{% endblock %}
+
+</div>
+{% block products %}{% endblock %}
+{% block about_product %}{% endblock %}
+  </body>
+</html>

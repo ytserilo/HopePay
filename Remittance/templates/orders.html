@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    {% load staticfiles %}
+    <meta charset="utf-8">
+    <title>HopePay, веб-сервіс безпечної покупки</title>
+    <link rel="shortcut icon" href="{% static 'img/HopePay.jpg' %}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/custom_style.css' %}">
+
+  </head>
+  <body>
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Редагувати Оголошення</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+              <input type="number" id="price" name="Ціна" class="form-control" placeholder="Ціна *" value=""/>
+          </div>
+          <div class="form-group">
+            <label>Опис *</label>
+            <textarea id="description" style="resize: none;" name="Опис" class="form-control" rows="4" cols="40"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="edit-complete" class="btn btn-primary">Примінити</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="/chat/remittances/">HopePay</a>
+    <div class="my-2 my-lg-0" style="position: absolute; right: 10px;">
+      	<img src="{{ user.user_image.url }}" id="avatar-img" alt="avatar">
+        <div class="dropdown-menu" style="left: -130px;" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="/auth/profile/">Профіль</a>
+          <a class="dropdown-item" href="/auth/logout/">Вийти</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+      $("#avatar-img").on('click', function(){
+        if($(".dropdown-menu").attr('class') == 'dropdown-menu show'){
+          $(".dropdown-menu").attr('class', 'dropdown-menu')
+        }else{
+          $(".dropdown-menu").attr('class', 'dropdown-menu show')
+        }
+
+      });
+    </script>
+  </nav>
+  <div class="container">
+    <h1>Оголошення там де Ви виступаєте в ролі: </h1>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Покупець</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Продавець</a>
+      </li>
+
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+        <ul class="list-group">
+          {% for i in orders_customer %}
+          {% if i.successful == True %}
+            <li style="background: rgba(134,180,50,0.5)" class="list-group-item order-block">
+            <p class="sell">Продано</p>
+          {% elif i.successful == False %}
+            <li style="background: #fff4d9;" class="list-group-item order-block">
+            <p class="sell">Відмінені</p>
+          {% else %}
+            <li class="list-group-item order-block">
+          {% endif %}
+              <div class="main-info">
+                <div class="image">
+                  {% if i.images.all.0 != None %}
+                    <img width="50px" height="50px" src="i.images.all.0.url" alt="">
+                  {% else %}
+                    <img width="50px" height="50px" src="{% static 'no-product-found.jpg' %}" alt="">
+                  {% endif %}
+                  <h4><a href="/market/about_product/{{ i.id }}/" >{{ i.product_remittance.all.0.title }}</a></h4>
+                </div>
+                <div class="amount">
+                  <b>Ціна: {{ i.amount }} грн.</b>
+                </div>
+              </div>
+
+              <div class="control-order">
+                <span onclick="edit('{{ i.id }}')" style="color: #155724;">Редагувати</span>
+                <span onclick="delete('{{ i.id }}')">Видалити</span>
+              </div>
+            </li>
+
+          {% endfor %}
+        </ul>
+
+      </div>
+      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <ul class="list-group">
+          {% for i in orders_seller %}
+            {% if i.active_status == False %}
+              <li id="{{ i.id }}" style="opacity: 0.5; background: gray" class="list-group-item order-block">
+            {% else %}
+              <li id="{{ i.id }}" class="list-group-item order-block">
+            {% endif %}
+              <div class="main-info">
+                <div class="image">
+                  {% if i.images.all.0 != None %}
+                    <img width="50px" height="50px" src="i.images.all.0.url" alt="">
+                  {% else %}
+                    <img width="50px" height="50px" src="{% static 'no-product-found.jpg' %}" alt="">
+                  {% endif %}
+                  <h4><a href="/market/about_product/{{ i.id }}/" >{{ i.product_remittance.all.0.title }}</a></h4>
+                </div>
+                <div class="amount">
+                  <b>Ціна: {{ i.amount }} грн.</b>
+                </div>
+              </div>
+
+              <div class="control-order">
+                <span onclick="edit('{{ i.id }}')" style="color: #155724;">Редагувати</span>
+                <span onclick="delete_product('{{ i.id }}')">Видалити</span>
+                {% if i.active_status == True %}
+                  <span style="color: #a7000f" id="status-{{i.id}}" onclick="status_product('{{ i.id }}', 'deactivate')">Деактивувати</span>
+                {% else %}
+                  <span style="color: #435f7a" id="status-{{i.id}}" onclick="status_product('{{ i.id }}', 'activate')">Активувати</span>
+                {% endif %}
+
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script src='{% static "js/jquery.cookie.js" %}'></script>
+<script type="text/javascript">
+  function csrf(){
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    };
+    $.ajaxSetup({
+        crossDomain: false,
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+            }
+        }
+    });
+  }
+  function status_product(id, status){
+    csrf();
+    $.ajax({
+      url: '/market/change_status/{}/'.replace('{}', id),
+      method: 'POST',
+      data: {
+        'mode': status
+      },
+      success: function(data){
+        if(data['result'] == 'success'){
+
+
+          if(status == 'activate'){
+            var id_name = "#status-{}".replace('{}', id);
+            $(id_name).attr('onclick', 'status_product('+id+', \'deactivate\')');
+            $(id_name).attr('style', 'color: #a7000f')
+
+            $(id_name).html('Деактивувати');
+            $("#{}".replace('{}', id)).attr('style', '');
+          }
+          else{
+            var id_name = "#status-{}".replace('{}', id);
+            $(id_name).attr('onclick', 'status_product('+id+', \'activate\')');
+            $(id_name).attr('style', 'color: #435f7a')
+
+            $(id_name).html('Активувати');
+            $("#{}".replace('{}', id)).attr('style', 'opacity: 0.5; background: gray');
+          }
+        }
+      }
+    })
+  }
+
+  function delete_product(id){
+    csrf();
+    $.ajax({
+      url: '/market/delete_product/{}/'.replace('{}', id),
+      method: 'POST',
+      success: function(data){
+        if(data['result'] == 'success'){
+          $("#{}".replace('{}', id)).remove();
+        }
+        else{
+          window.location.reload();
+        }
+      }
+    });
+  }
+
+</script>
+  </body>
+</html>

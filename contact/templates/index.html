@@ -1,0 +1,108 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block contacts %}
+<div class="container">
+
+  <style media="screen">
+    h1{
+      font-size: 25px; font-family: 'Verdana'; font-weight: bold
+    }
+    p{
+      font-size: 18px; font-family: 'Arial'; font-style: italic
+    }
+    .fa{
+      color: #32465a; font-size: 150px; text-align: center
+    }
+    .btn{
+       background: #32465a;
+    }
+    .btn:hover{
+      background: green
+    }
+  </style>
+  <!-- Heading Row -->
+  <div class="row align-items-center my-5">
+    <div class="col-lg-7">
+      <img class="img-fluid rounded mb-4 mb-lg-0" src="{% static 'img/HopePay.jpg' %}" alt="">
+    </div>
+    <!-- /.col-lg-8 -->
+    <div class="col-lg-5">
+      <h1>HopePay</h1>
+      <br><br>
+      <p>Це унікальний в своєму роді сервіс безпечної покупки. Де ви можете контролювати свої гроші від початку покупки і до отримання товару чи послуги !</p>
+      <br><br>
+      <a class="btn btn-primary" href="/chat/remittances/" style="padding: 20px; font-size: 30px">Перейти до дії</a>
+    </div>
+    <!-- /.col-md-4 -->
+  </div>
+  <!-- /.row -->
+
+  <!-- Call to Action Well -->
+  <div class="card text-white bg-secondary my-5 py-4 text-center">
+    <div class="card-body">
+      <p class="text-white m-0">"Життя — це супермаркет, бери що хочешь, але касса — попереду"</p>
+    </div>
+  </div>
+
+  <!-- Content Row -->
+  <div class="row">
+    <div class="col-md-4 mb-5">
+      <div class="card" style="width: 18rem;">
+        <i class="fa fa-lock"></i>
+        <div class="card-body">
+          <p class="card-text" style="text-align: center">
+            Всі ваші дані про договора, ваші переписки з продавцем чи покупцем шифруються а також зберігаються в окремій базі дані на
+            <a href="https://uk.wikipedia.org/wiki/%D0%91%D0%BB%D0%BE%D0%BA%D1%87%D0%B5%D0%B9%D0%BD">BlockChain</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- /.col-md-4 -->
+    <div class="col-md-4 mb-5">
+      <div class="card" style="width: 18rem;">
+        <i class="fa fa-handshake-o"></i>
+        <div class="card-body">
+
+          <p class="card-text" style="text-align: center">Ми використовуєм <a href="https://uk.wikipedia.org/wiki/LiqPay">LiqPay</a> в якості системи оплати. І якщо станеться якась нештатна ситуація, то гроші обов'язково повернуть вам на рахунок</p>
+        </div>
+      </div>
+    </div>
+    <!-- /.col-md-4 -->
+    <div class="col-md-4 mb-5">
+      <div class="card" style="width: 18rem;">
+        <i class="fa fa-users"></i>
+        <div class="card-body">
+
+          <p class="card-text" style="text-align: center">Крім всього, що стосується безпеки і надійності веб-сервісу, в нас є мессенджер який дозволяє вам обговорювати важливі питання!</p>
+        </div>
+      </div>
+    </div>
+    <!-- /.col-md-4 -->
+
+  </div>
+  <!-- /.row -->
+
+</div>
+<footer class="py-5 bg-dark">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <p class="text-white">098 92 541 56</p>
+          <p class="text-white">hopepay.my@gmail.com</p>
+          <p class="text-white">Умань вул. Глібка 8</p>
+        </div>
+        <div class="col-sm">
+          <p class="text-white"><img src="{% static '/img/ic_master.png' %}" alt=""></p>
+        </div><br><br>
+        <div class="col-sm">
+          <p class="text-white"><img src="{% static '/img/ic_visa.png' %}" alt=""></p>
+        </div><br><br>
+        <div class="col-sm">
+          <p class="text-white"><a href="/ask/">Залишити відгук</a></p>
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+  </footer>
+{% endblock %}

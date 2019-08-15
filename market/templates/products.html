@@ -1,0 +1,290 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+  {% block products_style %}
+  <meta charset="UTF-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link href="image/favicon.png" rel="icon" />
+  <title></title>
+  <meta name="description" content="Responsive and clean html template design for any kind of ecommerce webshop">
+  <script src="{% static 'js/categories.js' %}"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/stylesheet.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/owl.carousel.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/owl.transitions.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/responsive.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/all.css' %}">
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans' type='text/css'>
+  {% endblock %}
+  {% block switch_mode %}
+  <div id="switch-mode" style="margin-left: 5px" style="postition: relative"><span>Виберіть режим</span>
+    <div style="display: none" class="mode">
+      <a>Я хочу продати</a>
+    </div>
+  </div>
+    <script type="text/javascript">
+      $('#switch-mode').on('click', function(){
+        if($('.mode').attr('style') == 'display: none'){
+          $('.mode').attr('style', 'display: block');
+        }
+        else{
+          $('.mode').attr('style', 'display: none');
+        }
+      });
+
+      $('.mode').children('a').on('click', function(){
+        if($('.mode').children('a').html() == 'Я хочу продати'){
+          $('.mode').children('a').html('Я хочу купити');
+        }
+        else{
+          $('.mode').children('a').html('Я хочу продати');
+        }
+        preproces_data();
+      })
+    </script>
+  {% endblock %}
+  {% block products %}
+  <div style="overflow-y: auto" class="wrapper-wide">
+    <div class="middle">
+      <div id="container">
+        <div id="nav-categories">
+          <div class="container">
+            <div class="row">
+              <div class="categories-block">
+                <div class="col">
+                  <select class="form-control form-control-sm" id="main-category">
+                    <option>Оберіть рубрику</option>
+                    <option value="Дитячий світ">Дитячий світ</option>
+                    <option value="Нерухомість">Нерухомість</option>
+                    <option value="Транспорт">Транспорт</option>
+                    <option value="Запчастини для транспорту">Запчастини для транспорту</option>
+                    <option value="Дім і сад">Дім і сад</option>
+                    <option value="Мода і стиль">Мода і стиль</option>
+                    <option value="Електроніка">Електроніка</option>
+                    <option value="Хобі, відпочинок і спорт">Хобі, відпочинок і спорт</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <select class="form-control form-control-sm" id="sub-category">
+                    <option>Оберіть категорію</option>
+                  </select>
+                </div>
+
+              </div>
+              <div class="option-block"></div>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="col products">
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+            <div class="col product" style="border-radius: 10px">
+              <div class="image">
+                <a href="#">
+                  <img src="/media/user_image/default.png" alt="" title="" class="img-responsive" style="width: 125px;height: 125px">
+                  <div class="name" style="word-wrap: break-word;">
+                    <h5 >asdasdasda</h5>
+                  </div>
+                </a>
+              </div>
+              <div class="caption">
+                <p class="price">
+                  <span class="saving">500000руб.</span>
+                </p>
+              </div>
+            </div>
+
+              <!-- Featured Product End-->
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'js/product.js' %}"></script>
+    <script src="{% static 'js/gen_about_product_html.js' %}"></script>
+    <script src="{% static 'js/navigation.js' %}"></script>
+    <!--Footer Start-->
+    <footer id="footer">
+      <div class="fpart-first">
+        <div class="container">
+          <div class="row">
+            <div class="contact col-lg-3 col-md-3 col-sm-12 col-xs-12">
+              <h5>Contact Details</h5>
+              <ul>
+                <li class="address"><i class="fa fa-map-marker"></i>Central Square, 22 Hoi Wing Road, New Delhi, India</li>
+                <li class="mobile"><i class="fa fa-phone"></i>+91 9898777656</li>
+                <li class="email"><i class="fa fa-envelope"></i>Send email via our <a href="contact-us.html">Contact Us</a>
+              </ul>
+            </div>
+            <div class="column col-lg-2 col-md-2 col-sm-3 col-xs-12">
+              <h5>Information</h5>
+              <ul>
+                <li><a href="about-us.html">About Us</a></li>
+                <li><a href="about-us.html">Delivery Information</a></li>
+                <li><a href="about-us.html">Privacy Policy</a></li>
+                <li><a href="about-us.html">Terms &amp; Conditions</a></li>
+              </ul>
+            </div>
+            <div class="column col-lg-2 col-md-2 col-sm-3 col-xs-12">
+              <h5>Customer Service</h5>
+              <ul>
+                <li><a href="contact-us.html">Contact Us</a></li>
+                <li><a href="returns.html">Returns</a></li>
+                <li><a href="sitemap.html">Site Map</a></li>
+              </ul>
+            </div>
+            <div class="column col-lg-2 col-md-2 col-sm-3 col-xs-12">
+              <h5>Extras</h5>
+              <ul>
+                <li><a href="manufacturer.html">Brands</a></li>
+                <li><a href="gift-voucher.html">Gift Vouchers</a></li>
+                <li><a href="#">Affiliates</a></li>
+                <li><a href="#">Specials</a></li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    {% load staticfiles %}
+    <meta charset="utf-8">
+    <title>HopePay, веб-сервіс безпечної покупки</title>
+    <link rel="shortcut icon" href="{% static 'img/HopePay.jpg' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'css/register_style.css' %}">
+    <style media="screen">
+      i.fa {
+        width: 26px;
+        height: 26px;
+        line-height: 35px;
+        text-align: center;
+        margin-left: -26px;
+        position: relative;
+        z-index: 1;
+        float: right;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+<div class="modal fade" style="display: none" id="so_login" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Увійти</h5>
+        <button type="button" id="close_login_modal" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal_body_login">
+
+        <div class="input-group mb-3">
+            <input type="text" id="username_modal" class="form-control" placeholder="Логін" aria-label="Логін" aria-describedby="basic-addon1">
+        </div>
+        <div class="input-group mb-3">
+            <input type="password" id="password_modal" class="form-control" placeholder="Пароль" aria-label="Пароль" aria-describedby="basic-addon1">
+        </div>
+        <button class="btn btn-primary" style="background-color: #435f7a;" id="login_in" type="submit">Увійти</button>
+      </div>
+      <div class="mb-3">
+          <a href="#" id="restore" class="link" style="margin-left: 10px">Відновити пароль</a>
+      </div>
+
+
+    </div>
+
+  </div>
+</div>
+<script type="text/javascript">
+function see(e, el){
+  $("#"+e).attr('type', 'text');
+  el.setAttribute('class', 'fa fa-eye-slash');
+  el.setAttribute('onclick', 'sleep("'+ e +'", this)');
+};
+function sleep(e, el){
+  $("#"+e).attr('type', 'password');
+  el.setAttribute('class', 'fa fa-eye');
+  el.setAttribute('onclick', 'see("'+ e +'", this)');
+}
+</script>
+
+
+<!-- Modal -->
+<div class="modal fade"  style="display: none" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">Ліцензійна угода</h5>
+        <button type="button" onclick="close_license()" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="so_email" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Підтвердіть ваш email</h5>
+        <button type="button" id="close_email_modal" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="login-customer" id="email_customer">
+            <ul class="list-log">
+              <input type="text" name="pin" id="pin" value="" placeholder="Введіть пін-код сюди">
+            </ul>
+       </div>
+      <div class="modal-footer">
+        <button type="button" id="btn_pin" class="btn btn-primary">Підтвердити email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="/chat/remittances/">HopePay</a>
+  <a class="nav-link" style="position: absolute; left: 100px; color: black; " href="/">Про нас</a>
+</nav>
+<script type="text/javascript">
+  $("#avatar-img").on('click', function(){
+    if($(".dropdown-menu").attr('class') == 'dropdown-menu show'){
+      $(".dropdown-menu").attr('class', 'dropdown-menu')
+    }else{
+      $(".dropdown-menu").attr('class', 'dropdown-menu show')
+    }
+
+  });
+</script>
+</nav>
+      <div id="account-register" class="container">
+        <div class="row">
+          <div id="content" class="col-sm-9">
+            <h1>Регестрація нового акаунта</h1>
+            <p>Якщо у вас є акаунт натисніть тут
+              <a style="cursor: pointer; color: #435f7a" onclick="popup_login()">(Увійти).</a>
+            </p>
+        <div class="form-horizontal">
+          {% csrf_token %}
+          {% for form in reg_form %}
+            <div class="form-group required">
+              <label class="col-sm control-label">{{ form.label }}</label>
+              <div class="col-sm-10">
+                {{ form }}
+                  {% if form.errors %}
+                  <div class="alert alert-danger">{{ form.errors }}</div>
+                  {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+          <label onclick="open_license()" style="cursor: pointer">Я приймаю умови ліцензійної угоди</label>
+          <input type="checkbox" id="accept">
+          <div class="buttons">
+            <div class="pull-right">
+              <input type="button" value="Продовжити" id="continue" class="btn btn-primary">
+            </div>
+          </div>
+
+        </div>
+
+        <script src="{% static 'js/cookie.js' %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.js"></script>
+        <script async src="{% static 'js/register.js' %}"></script>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function open_license(){
+        $("#exampleModalScrollable").css({'display': 'block', 'background-color': 'rgba(0, 0, 0, 0.5)'});
+        $("#exampleModalScrollable").attr('class', 'modal');
+      }
+      function close_license(){
+        $("#exampleModalScrollable").css({'display': 'none', 'background-color': 'rgba(0, 0, 0, 0)'});
+        $("#exampleModalScrollable").attr('class', 'modal fade');
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block style_scroll_remittance %}
+  <link rel="stylesheet" href="{% static 'css/chat-style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/custom_style.css' %}">
+  <style media="screen">
+    .read_messages, .unread_messages{
+      overflow-y: scroll;
+    }
+    .read_messages::-webkit-scrollbar,
+    .unread_messages::-webkit-scrollbar{
+    width: 10px;
+    }
+
+    /* Track */
+    .read_messages::-webkit-scrollbar-track,
+    .unread_messages::-webkit-scrollbar-track{
+    background: #E6EAEA;
+    }
+
+  </style>
+{% endblock %}
+  {% block individual_chat %}
+  <input type="hidden" id="card_number" name="" value="{{ user.usercard.card_number }}">
+  <input type="hidden" id="phone_number" name="" value="{{ user.usercard.phone_number }}">
+    <div id="sidepanel">
+      <div id="profile">
+        <div class="wrap">
+          <img id="profile-img" src="{{ user.user_image.url }}" class="{{ user.user_status }}" alt="" />
+          <p>{{ user.first_name }} {{ user.last_name }}</p>
+          <div id="status-options">
+            <ul>
+              <li id="status-online" class="active"><span class="status-circle"></span> <p>В мережі</p></li>
+              <li id="status-away"><span class="status-circle"></span> <p>Відійшов</p></li>
+              <li id="status-busy"><span class="status-circle"></span> <p>Зайнятий</p></li>
+              <li id="status-offline"><span class="status-circle"></span> <p>Не в мережі</p></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <span style="width: 100%;height: 2px;background-color: white;display: block;"></span>
+      <div id="contacts">
+        <ul><a href="/auth/register/">{{ login_error }}</a>
+          {% with "-1" as last %}
+            {% for c in customer %}
+             {% if c.successful == False %}
+
+             {% elif c.successful == True %}
+
+             {% else %}
+              <li class="contact" onclick="open_chat('{{ c.unique_link }}')">
+                <div class="wrap">
+                  {% if c.remittance_seller %}
+                  <div class="user-{{ c.remittance_seller.id }}">
+                    <span class="contact-status {{ c.remittance_seller.status }}"></span>
+                    <img src="{{ c.remittance_seller.user_image.url }}" alt="" />
+                  </div>
+
+                  {% else %}
+                  <div class="user-{{ c.remittance_customer.id }}">
+                    <span class="contact-status {{ c.remittance_customer.status }}"></span>
+                    <img src="{{ c.remittance_customer.user_image.url }}" alt="" />
+                  </div>
+
+                  {% endif %}
+                  <div class="meta" id="{{ c.unique_link }}">
+                    {% if c.remittance_seller.username %}
+                    {% for un in unreads %}
+                      {% if un.id == c.unique_link %}
+                        {% if un.unread_len != 0 %}
+                          <p class="preview">Кількість не прочитаних: {{ un.unread_len }}</p>
+                        {% else %}
+                          <p class="name">{{ c.remittance_seller.username }}</p>
+                          {% if user == c.author %}
+                          <p class="preview">Ви: {{c.messages.all.0.message_text}} </p>
+                          {% else %}
+                            <p class="preview">{{ c.messages.all.0.author.username }}: {{c.messages.all.0.message_text}} </p>
+                        {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                    {% else %}
+                      <p class="name">{{ c.remittance_customer.username }}</p>
+                      {% if c.messages.all.0.message_text %}
+                        {% for un in unreads %}
+                          {% if un.id == s.unique_link %}
+                            {% if un.unread_len != 0 %}
+                              <p class="preview">Кількість не прочитаних: {{ un.unread_len }}</p>
+                            {% else %}
+                              {% if user.id == s.messages.all.0.author.id %}
+                                <p class="preview">Ви: {{ s.messages.all.0.message_text }}</p>
+                              {% else %}
+                                <p class="preview">{{ s.messages.all.0.author.username }}: {{ s.messages.all.0.message_text }}</p>
+                              {% endif %}
+                            {% endif %}
+                          {% endif %}
+                        {% endfor %}
+                      {% else %}
+                        <p class="preview">ID: {{ c.unique_link }}</p>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                </div>
+              </li>
+              {% endif %}
+            {% endfor %}
+            {% for s in seller %}
+              {% if s.successful == False %}
+
+              {% elif s.successful == True %}
+
+              {% else %}
+                <li class="contact" onclick="open_chat('{{ s.unique_link }}')">
+                  <div class="wrap">
+                    {% if s.remittance_customer %}
+                    <div class="user-{{ s.remittance_customer.id }}">
+                      <span class="user-{{ s.remittance_customer.id }}" class="contact-status {{ s.remittance_customer.status }}"></span>
+                      <img src="{{ s.remittance_customer.user_image.url }}" alt="" />
+                    </div>
+
+                    {% else %}
+                    <div class="user-{{ s.remittance_seller.id }}">
+                      <span class="contact-status {{ s.remittance_seller.status }}"></span>
+                      <img src="{{ s.remittance_seller.user_image.url }}" alt="" />
+                    </div>
+
+                    {% endif %}
+                    <div class="meta" id="{{ s.unique_link }}">
+
+                      {% if s.messages.all.last.message_text %}
+                        {% if user.id == s.messages.all.last.author.id %}
+                          <p class="preview">Ви: {{ s.messages.all.0.message_text }}</p>
+                        {% else %}
+                          <p class="preview">{{ s.messages.all.0.author.username }}: {{ s.messages.all.0.message_text }}</p>
+                        {% endif %}
+                      {% else %}
+                        <p class="preview">ID: {{ s.unique_link }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </li>
+              {% endif %}
+            {% endfor %}
+
+          {% endwith %}
+          </ul>
+        </div>
+
+  </div>
+
+  
+<input type="hidden" name="" id="user_id" value="{{ user.id }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+
+<script src="{% static 'js/cookie.js' %}"></script>
+<script src="{% static 'js/individual_chat.js' %}"></script>
+<script src="{% static 'js/chat-js.js' %}"></script>
+<script src="{% static 'js/decrypt_rsa.js' %}"></script>
+<script src="{% static 'js/rsa.js' %}"></script>
+<script src="{% static 'js/load_content.js' %}"></script>
+<script src="{% static 'js/gen_chat_html.js' %}"></script>
+
+<script src="{% static 'js/gen_remittance_settings_html.js' %}"></script>
+<script src="{% static 'js/gen_remittance_info_html.js' %}"></script>
+<script type="text/javascript">
+function add_invitation(data){
+  var html = '';
+    html += '<li class="replies">';
+      html += '<div class="card text-center">';
+        html += '<div class="card-header">Запит на додавання в кімнату</div>';
+          html += '<div class="card-body">';
+            html += '<h5 class="card-title">Скопіюйте ссилку і відправте її через любий зручний для вас мессенджер</h5>';
+            html += '<p class="card-text">'+ window.location.host + '/remittance/accept/'+ data['invite_code'] +'</p>';
+            html += '<a href="#" class="btn btn-primary">Копіювати</a>';
+          html += '</div>';
+      html += '</div>';
+     html += '</li>';
+   return html;
+}
+</script>
+<script src="{% static 'js/dinamic_load.js' %}"></script>
+<script type="text/javascript">
+  open_chat(window.location.pathname.split('/')[3]);
+</script>
+<script src="{% static 'js/user_status.js' %}"></script>
+{% endblock %}

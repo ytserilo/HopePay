@@ -1,0 +1,92 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block ask %}
+{% if ascked == False %}
+  <form action="/ask/" method="post">
+    {% csrf_token %}
+    <div style="margin-top: 30px; margin-bottom: 50px" class="container">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <p>Вам подобається наша ідея ?</p>
+          <ul style="list-style: none">
+            <li><input type="radio" name="first-yes">Так</li>
+            <li><input type="radio" name="first-not">Ні</li>
+            <li>Інше:
+              <textarea name="first-text" rows="1" cols="20"></textarea>
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p>Ви бачили схожий сайт в інтернеті ?</p>
+          <ul style="list-style: none">
+            <li><input type="radio" name="second-yes">Так</li>
+            <li><input type="radio" name="second-not">Ні</li>
+            <li>Інше:
+              <textarea name="second-text" rows="1" cols="20"></textarea>
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p>Ви порекомендували б наш сайт своїм рідним чи друзям ?</p>
+          <ul style="list-style: none">
+            <li><input type="radio" name="third-yes">Так</li>
+            <li><input type="radio" name="third-not">Ні</li>
+            <li>Інше:
+              <textarea name="third-text" rows="1" cols="20"></textarea>
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p>Ви б користувалися даним сайтом постійно ?</p>
+          <ul style="list-style: none">
+            <li><input type="radio" name="four-yes">Так</li>
+            <li><input type="radio" name="four-not">Ні</li>
+            <li>Інше:
+              <textarea name="four-text" rows="1" cols="20"></textarea>
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p>Ви колись попадались на вудку шахраїв в інтернеті ?</p>
+          <ul style="list-style: none">
+            <li><input type="radio" name="five-yes">Так</li>
+            <li><input type="radio" name="five-not">Ні</li>
+            <li>Інше:
+              <textarea name="five-text" rows="1" cols="20"></textarea>
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p>Оцініть ідею від 0 до 10 </p>
+          <ul style="list-style: none">
+            <li>
+              <input type="number" max="10" required min="0" name="six-text" value="">
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p>Якщо хочете на пишіть побажання або корективи</p>
+          <ul style="list-style: none">
+            <li>
+              <textarea name="seven-text" rows="1" cols="20"></textarea>
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p>Напишіть свій email</p>
+          <ul style="list-style: none">
+            <li>
+              <input type="email" name="email" required value="">
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <input type="submit" class="btn btn-success" value="Відправити">
+    </div>
+  </form>
+  {% else %}
+  <script type="text/javascript">
+    window.location.replace('/chat/remittances/');
+  </script>
+  {% endif %}
+{% endblock %}

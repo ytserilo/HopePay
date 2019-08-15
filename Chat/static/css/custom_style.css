@@ -1,0 +1,99 @@
+#frame .content .message-input .wrap input {
+  font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+  float: left;
+  border: none;
+  width: calc(100% - 50px);
+  padding: 25px;
+  font-size: 0.8em;
+  color: #32465a;
+  height: 26px;
+}
+#frame .content .message-input .wrap button{
+padding: 16px 0;
+}
+.order-block{
+  display: flex;
+  flex-direction: column;
+}
+.main-info{
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+}
+.main-info .image{
+  display: flex;
+}
+.main-info .image h4{
+  margin-left: 15px;
+  color: #435f7a;
+}
+.main-info .amount{
+  color: #435f7a;
+}
+.control-order span{
+  color: #721c24;
+  cursor: pointer;
+  margin: 10px;
+}
+.order-block{
+  box-shadow: 5px 5px 5px;
+  color: #435f7a;
+  cursor: unset;
+  margin: 5px 0;
+}
+.sell{
+    position: absolute;
+    top: 40%;
+    left: 45%;
+}
+#settings-remittance{
+background: #32465a;
+border: 1px solid white;
+padding: 0;
+position: absolute;
+right: 0;
+float: right;
+height: 100%;
+}
+#settings-remittance i,
+#info-remittance i{
+width: 40px;
+height: 40px;
+font-size: 40px;
+cursor: pointer;
+color: white;
+background: #32465a;
+}
+#settings-remittance i:hover,
+#info-remittance i:hover{
+background: #435f7a;
+}
+#info-remittance{
+background: #32465a;
+border: 1px solid white;
+padding: 0;
+position: absolute;
+left: 0;
+height: 100%;
+top: 0;
+}
+#frame{
+position: absolute;
+top: 0;
+}
+#avatar-img{
+width: 45px;
+height: 45px;
+border-radius: 50%;
+cursor: pointer;
+}
+#frame .navbar{
+  background: #f8f9fa!important;
+  z-index: 9;
+}
+#unread{
+  background: #435f7a;
+  color: white;
+  padding: 5px;
+  text-align: center;
+}

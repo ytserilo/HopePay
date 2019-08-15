@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+{% load staticfiles %}
+  <head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <meta charset="utf-8">
+    <style media="screen">
+    .col{
+      -ms-flex-preferred-size: 0;
+      flex-basis: 0;
+      -ms-flex-positive: 1;
+      flex-grow: 1;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      border: 1px solid #435f7a;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .col:hover{
+      box-shadow: 4px 4px 10px #435f7a;
+
+    }
+    </style>
+    <title></title>
+  </head>
+  <body>
+    <div class="container register-form">
+            <div class="form">
+                <div class="note">
+
+                </div>
+
+                <div class="form-content">
+                    <div class="row">
+                      {% csrf_token %}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                              <input type="text" id="title" value="{{product.title}}" name="Заголовок" class="form-control" placeholder="Заголовок">
+                            </div>
+                            <div class="form-group">
+                              <span class="choose-category"></span>
+                            </div>
+                            <div class="form-group product-detail">
+
+                            </div>
+                            <div class="form-group">
+                              <label>Опис *</label>
+                              <textarea id="description" style="resize: none;" name="Опис" class="form-control" rows="8" cols="80">{{product.payment_desciption}}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="price" name="Ціна" class="form-control" placeholder="Ціна *" value="{{product.amount}}"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6 add">
+                            <div class="form-group">
+                              <select class="form-control" name="currency" id="currency">
+                                <option value="UAH">UAH</option>
+                              </select>
+
+                            </div>
+                            <div class="form-group">
+                              {% if product.postal_transfer == True%}
+                                <input id="postal" type="checkbox" checked name="Пошта">
+                              {% else %}
+                                <input id="postal" type="checkbox" name="Пошта">
+                              {% endif %}
+                              <label for="scales">Натисніть якщо товар прийде по пошті</label>
+                            </div>
+                            <div class="form-group">
+                              {% if product.seller == True %}
+                                <input checked id="seller" type="checkbox" name="Продавець">
+                              {% else %}
+                                <input id="seller" type="checkbox" name="Продавець">
+                              {% endif %}
+                              <label for="scales">Натиніть якщо ви продавець</label>
+                            </div>
+                            <div class="form-group">
+                              {% if product.payment_by_installments == True %}
+                                <input id="pay" type="checkbox" checked name="pay-parts">
+                              {% else %}
+                                <input id="pay" type="checkbox" name="pay-parts">
+                              {% endif %}
+                              <label for="scales">Натиніть якщо ви хочете купити чи продати товар в рострочку</label>
+
+                            </div>
+                            {% if product.payment_by_installments == True %}
+                              <div class="form-control parts">
+                                <input type="number" value="{{product.installments_count}}" id="parts" name="parts" class="form-control" placeholder="Кількість платежів" min="2" max="12">
+                              </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button onclick="update()" type="button" class="btnSubmit">Змінити</button>
+                </div>
+            </div>
+        </div>
+  </body>
+  <script src="{% static 'js/categories.js' %}"></script>
+  <script src='{% static "js/jquery.cookie.js" %}'></script>
+  <script type="text/javascript">
+    function encrypt_value(msgString) {
+      var key = CryptoJS.enc.Utf8.parse(String($.cookie('csrftoken')).slice(0, 16));
+      var iv = CryptoJS.lib.WordArray.random(16);
+      var encrypted = CryptoJS.AES.encrypt(msgString, key, {
+          iv: iv
+      });
+      var result = iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64)
+
+      return result;
+    }
+
+    function gen_html(inp_data, data, main_category, sub_category, fin_category){
+      var html = '';
+
+      if(fin_category == false){
+        var text = '{1} > {2}'.replace('{1}', main_category);
+        text = text.replace('{2}', sub_category);
+        text = '<p id="main-categories">{}</p>'.replace('{}', text);
+
+        $('.choose-category').children().remove();
+        $('.choose-category').append(text);
+
+        var html = '';
+        for(var i in inp_data[main_category][sub_category]){
+          var value = inp_data[main_category][sub_category][i];
+          if(i.search('select') != -1){
+            html += '<div class="form-group"><label>'+ name +'</label>';
+            if(i == 'Марка brand-select'){
+              html += '<select name="'+ i +'" id="brand" class="form-control">'
+            }
+            else if (i == 'Модель select') {
+              html += '<select name="'+ i +'" id="model-list" class="form-control">';
+              var brand = inp_data[main_category][sub_category]['Марка brand-select'];
+              for(var model in categories[main_category][sub_category]['Марка brand-select'][brand]){
+                var m = categories[main_category][sub_category]['Марка brand-select'][brand][model];
+                if(m == value){
+                  html += '<option selected value="'+m+'">'+m+'</option>';
+                }else{
+                  html += '<option value="'+m+'">'+m+'</option>';
+                }
+              }
+            }
+            else{
+              html += '<select name="'+ i +'" class="form-control">'
+            }
+
+            for(var option in categories[main_category][sub_category][i]){
+
+              if(i == 'Марка brand-select'){
+                if(option == value){
+                  html += '<option selected value="'+ option +'">'+ option +'</option>'
+                }
+                else{
+                  html += '<option value="'+ option +'">'+ option +'</option>'
+                }
+              }
+
+              else{
+                var options = categories[main_category][sub_category][i];
+
+                if(options[option] == value){
+                  html += '<option selected value="'+ options[option] +'">'+ options[option] +'</option>'
+                }
+                else{
+                  html += '<option value="'+ options[option] +'">'+ options[option] +'</option>'
+                }
+              }
+            }
+            html += '</select></div>'
+          }
+          if (i.search('checkbox') != -1) {
+            var counter = 0;
+            html += '<div class="form-group"><label>'+ i.replace('checkbox', '') +'</label>';
+            html += '<div class="container">';
+            html += '<div class="row">';
+            for(var check in categories[main_category][sub_category][i]){
+              var checks = categories[main_category][sub_category][i];
+              if(checks[check] in value){
+                html += '<div class="col"><input name="'+i+'/'+checks[check]+'" checked type="checkbox" class="form-control">'+ checks[check] +'</div>';
+              }else{
+                html += '<div class="col"><input name="'+i+'/'+checks[check]+'" type="checkbox" class="form-control">'+ checks[check] +'</div>';
+              }
+              if(counter == 3){
+                counter = 0;
+                html += '<div class="w-100"></div>'
+              }
+              counter += 1;
+            }
+            html += '</div></div></div><hr>'
+          }
+          if (i.search('number') != -1) {
+            html += '<div class="form-group"><label>'+i.replace('number', '')+'</label>';
+            html += '<input type="number" value="'+value+'" name="'+i+'" class="form-control" /></div>'
+          }
+          if(i.search('text') != -1){
+            html += '<div class="form-group"><label>'+i.replace('text', '')+'</label>';
+            html += '<input type="text" value="'+value+'" name="'+i+'" class="form-control" /></div>'
+          }
+        }
+        $('.product-detail').children().remove();
+        $('.product-detail').append(html);
+
+
+        $('#brand').on('click', function(){
+          var model_list_html = '';
+          var brand = categories['Транспорт']['Легкові автомобілі']['Марка brand-select'][$('#brand').val()];
+
+          for(var model in brand){
+            model_list_html += '<option value="'+ brand[model] +'">'+ brand[model] +'</option>'
+          }
+          $('#model-list').children().remove();
+          $('#model-list').append(model_list_html);
+        });
+      }
+      else{
+        var text = '{1} > {2} > {3}'.replace('{1}', main_category);
+        text = text.replace('{2}', sub_category);
+        text = text.replace('{3}', fin_category);
+
+        text = '<p id="main-categories">{}</p>'.replace('{}', text);
+
+        $('.choose-category').children().remove();
+        $('.choose-category').append(text);
+
+        var html = '';
+
+        for(var i in inp_data[main_category][sub_category][fin_category]){
+          var value = inp_data[main_category][sub_category][i];
+          if(i.search('select') != -1){
+
+            html += '<div class="form-group"><label>'+ i.replace('select', '') +'</label>'
+            html += '<select name="'+ i+'" class="form-control">'
+            for(var option in categories[main_category][sub_category][fin_category][i]){
+              var options = categories[main_category][sub_category][fin_category][i];
+              if(options[option] == value){
+                html += '<option selected value="'+ options[option] +'">'+ options[option] +'</option>';
+              }else{
+                html += '<option value="'+ options[option] +'">'+ options[option] +'</option>';
+              }
+            }
+            html += '</select></div>'
+          }
+          else if (i.search('checkbox') != -1) {
+            var counter = 0;
+            html += '<div class="form-group"><label>'+ i.replace('checkbox', '') +'</label>';
+            html += '<div class="container">';
+            html += '<div class="row">';
+            for(var check in categories[main_category][sub_category][fin_category][i]){
+              var checks = categories[main_category][sub_category][fin_category][i];
+              if(checks[check] in value){
+                html += '<div class="col"><input checked name="'+i+'/'+checks[check]+'" type="checkbox" class="form-control">'+ checks[check] +'</div>';
+              }else{
+                html += '<div class="col"><input name="'+i+'/'+checks[check]+'" type="checkbox" class="form-control">'+ checks[check] +'</div>';
+              }
+              if(counter == 3){
+                counter = 0;
+                html += '<div class="w-100"></div>'
+              }
+              counter += 1;
+            }
+            html += '</div></div></div><hr>'
+          }
+          else if (i.search('number') != -1) {
+            html += '<div class="form-group"><label>'+i.replace('number')+'</label>';
+            html += '<input type="number" value="'+value+'" name="'+i+'" class="form-control" /></div>'
+          }
+        }
+
+        $('.product-detail').children().remove();
+        $('.product-detail').append(html);
+      }
+
+      $('.col').on('click', function(){
+        if($(this).children('input[type="checkbox"]').prop('checked') == false){
+          $(this).children('input[type="checkbox"]').prop('checked', true);
+        }else{
+          $(this).children('input[type="checkbox"]').prop('checked', false);
+        }
+
+      });
+
+    }
+    function create_order(){
+        var inputs = document.getElementsByTagName('input');
+        var select = document.getElementsByTagName('select');
+
+        var create_data = {};
+
+        for(var s in select){
+          create_data[select[s].name] = select[s].value;
+        }
+        for(var i in inputs){
+          if(inputs[i].type == 'checkbox'){
+            var category = inputs[i].name.split('/');
+
+            if(create_data[category[0]]){
+              if(inputs[i].checked == true){
+                create_data[category[0]][category[1]] = inputs[i].checked;
+              }
+            }else{
+              if(inputs[i].checked == true){
+                create_data[category[0]] = {};
+                create_data[category[0]][category[1]] = inputs[i].checked;
+              }
+            }
+          }else{
+              var name = inputs[i].name;
+              create_data[name] = inputs[i].value;
+          }
+        }
+        delete create_data['Ціна'];
+        delete create_data['pay-parts'];
+        delete create_data['undefined'];
+        delete create_data['namedItem'];
+        delete create_data['item'];
+        delete create_data['csrfmiddlewaretoken'];
+        delete create_data['currency'];
+        delete create_data['Пошта'];
+        delete create_data['Продавець'];
+        delete create_data['parts'];
+        delete create_data['Заголовок'];
+        return create_data;
+
+    }
+    $.ajax({
+      url: window.location.href,
+      method: 'GET',
+      success: function(data){
+        var result = data['result'];
+
+        for(var main in result){
+          var main_category = main;
+          for(var sub in result[main]){
+            var sub_category = sub;
+            var fin_category = false;
+            for(var und in result[main][sub]){
+              if(und.search('select') != -1 || und.search('checkbox') != -1 || und.search('number') != -1 || und.search('text') != -1){
+                fin_category = false;
+              }
+              else{
+                fin_category = und;
+              }
+            }
+
+          }
+        }
+        gen_html(result, categories, main_category, sub_category, fin_category);
+
+      }
+    })
+
+    $("#description").on('input', function(){
+      var p_d = $("#description").parent();
+        if ($("#description").val() == ''){
+
+          if (p_d.children('.alert-danger').length == 0){
+            p_d.append('<div class="alert alert-danger" role="alert">Будь-ласка введіть опис вашого договору</div>');
+          }
+        }
+
+        else{
+          if (p_d.children('.alert-danger').length > 0){
+            p_d.children('.alert-danger').remove();
+          }
+        }
+    });
+
+    $("#price").on('input', function(){
+      var p_a = $("#price").parent();
+      if($("#price").val() == ''){
+
+        if (p_a.children('.alert-danger').length == 0){
+          p_a.append('<div class="alert alert-danger" role="alert">Будь-ласка назначте ціну</div>');
+        }
+      }
+      else{
+        if (p_a.children('.alert-danger').length > 0){
+          p_a.children('.alert-danger').remove();
+        }
+      }
+    });
+
+    function update(){
+
+      if($("#description").val() == ''){
+        var p_d = $("#description").parent();
+        if (p_d.children('.alert-danger').length == 0){
+          p_d.append('<div class="alert alert-danger" role="alert">Будь-ласка введіть опис вашого договору</div>');
+        }
+      }
+      if($("#price").val() == ''){
+        var p_a = $("#price").parent();
+        if (p_a.children('.alert-danger').length == 0){
+          p_a.append('<div class="alert alert-danger" role="alert">Будь-ласка назначте ціну</div>');
+        }
+      }
+      if($("#currency").val() == ''){
+        var c_a = $("#currency").parent();
+        if (c_a.children('.alert-danger').length == 0){
+          c_a.append('<div class="alert alert-danger" role="alert">Будь-ласка назначте ціну</div>');
+        }
+      }
+
+      if($("#description").val() != '' && $("#price").val() != '' && $("#currency").val() != ''){
+        if($("#pay").prop('checked') == true){
+          if(Number($("#parts").val()) >= 2 && Number($("#parts").val()) <= 12){
+
+          }else{
+            return undefined;
+          }
+        }
+      }
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        };
+        $.ajaxSetup({
+            crossDomain: false,
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+                }
+            }
+        });
+
+      var result = create_order();
+      var cts = $('#main-categories').text().split(' > ');
+
+      category_data = {};
+      var m_cat = cts[0];
+      var s_cat = cts[1];
+      if(cts.length == 3){
+        var u_cat = cts[2];
+        category_data[m_cat] = {};
+        category_data[m_cat][s_cat] = {};
+        category_data[m_cat][s_cat][u_cat] = result;
+      }else{
+        category_data[m_cat] = {};
+        category_data[m_cat][s_cat] = result;
+      }
+
+      var send_data = {
+        'description': $("#description").val(),
+        'amount': $("#price").val(),
+        'currency': $("#currency").val(),
+        'postal_transfer': String($('#postal').prop('checked')),
+        'seller': String($('#seller').prop('checked')),
+        'pay': String($("#pay").prop('checked')),
+        'parts': String($("#parts").val()),
+        'category-data': category_data,
+        'title': $("#title").val(),
+        "location": 'Location'
+      }
+      $.ajax({
+        method: 'POST',
+        url: window.location.href,
+        data: {
+          'data': encrypt_value(JSON.stringify(send_data))
+        },
+        success: function(data){
+          if(data['success']){
+
+          }else{
+            for(var key in data){
+              $("input").parent().children('.alert-danger').remove();
+              var new_key = key.replace('-error', '');
+              var html = '<div class="alert alert-danger" role="alert">'+data[key]+'</div>';
+              $("input[name=\"{new_key}\"]".replace('{new_key}', new_key)).parent().append(html);
+            }
+          }
+        }
+      })
+    }
+  </script>
+  <script type="text/javascript">
+    function parts(){
+      $('#parts').on('input', function(){
+
+        var parent = $('#parts').parent();
+
+        if($('#parts').val() == ''){
+          parent.children('.alert-danger').remove();
+          parent.append('<div class="alert alert-danger" role="alert">Будь-ласка кажіть кількість платежів</div>');
+        }
+        else{
+          if(Number($('#parts').val()) > 12){
+            parent.children('.alert-danger').remove();
+            parent.append('<div class="alert alert-danger" role="alert">Максимальна кількість це - 12 платежів</div>');
+          }
+          else if(Number($('#parts').val()) < 2){
+            parent.children('.alert-danger').remove();
+            parent.append('<div class="alert alert-danger" role="alert">Мінімальна кількість це - 2 платежа</div>');
+          }
+          else{
+            parent.children('.alert-danger').remove();
+        }
+        }
+      });
+    }
+    $("#pay").on('click', function(){
+      if($("#pay").prop('checked') == true){
+        if($(".add").children('.parts').length == 0){
+          var html = '';
+          html += '<div class="form-control parts">';
+            html += '<input type="number" id="parts" name="parts" class="form-control" placeholder="Кількість платежів" min="2" max="12">';
+          html += '</div>';
+          $(".add").append(html);
+           parts()
+        }
+      }
+      else{
+        $('.add').children('.parts').remove();
+      }
+    });
+    function open_category_list(){
+      $('.modal-cat').attr('style', 'display: block; background: rgba(0,0,0,0.5)')
+    }
+  </script>
+</html>

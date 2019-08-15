@@ -1,0 +1,25 @@
+.note
+  {
+      text-align: center;
+      height: 80px;
+      background: #435f7a;
+      color: #fff;
+      font-weight: bold;
+      line-height: 80px;
+  }
+.form-content
+{
+    padding: 5%;
+    border: 1px solid #ced4da;
+    margin-bottom: 2%;
+}
+
+.btnSubmit
+{
+    border:none;
+    padding: 1%;
+    width: 20%;
+    cursor: pointer;
+    background: #435f7a;
+    color: #fff;
+}  
